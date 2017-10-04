@@ -61,9 +61,9 @@ public class Assignment1 {
 
 			temp.set(0, temp.get(0) + 1);
 
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < size && row < rows; i++) {
 				if (temp.get(i) == size) {
-					temp.set(i, temp.get(0) % size);
+					temp.set(i, temp.get(i) % size);
 					temp.set(i + 1, temp.get(i + 1) + 1);
 				}
 
@@ -137,7 +137,7 @@ public class Assignment1 {
 		for (int i = 0; i < size; i++) {
 			queue.add(i);
 			matching.add(-1);
-			inverse_matching.add(0);
+			inverse_matching.add(-1);
 		}
 
 		while (queue.size() > 0) {
@@ -145,7 +145,7 @@ public class Assignment1 {
 			int student = professor_list.get(queue.get(0)).get(0);
 
 			// Student not yet chosen
-			if (!matching.contains(student)) {
+			if (inverse_matching.get(student) == -1) {
 
 				matching.set(queue.get(0), student); // Get top choice in professor's list
 				inverse_matching.set(student, queue.get(0));
@@ -165,6 +165,7 @@ public class Assignment1 {
 				else {
 					queue.add(inverse_matching.get(student));
 					matching.set(inverse_matching.get(student), -1);
+					inverse_matching.set(student, -1);
 					matching.set(queue.get(0), student);
 					inverse_matching.set(student, queue.get(0));
 					professor_list.get(queue.get(0)).remove(0);
@@ -213,8 +214,10 @@ public class Assignment1 {
 		ArrayList<ArrayList<Integer>> student_list = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Cost> costs = new ArrayList<Cost>();
 		int size = preferences.getNumberOfProfessors();
+		
+		Preferences swapped = new Preferences(preferences.getNumberOfProfessors(), preferences.getNumberOfStudents(), preferences.getStudents_preference(), preferences.getProfessors_preference());
 
-		ArrayList<Integer> matching = new ArrayList<Integer>(stableMatchGaleShapley(preferences));
+		ArrayList<Integer> matching = new ArrayList<Integer>(stableMatchGaleShapley(swapped));
 
 		/* Zero-indexing Preferences */
 		for (int i = 0; i < size; i++) {
